@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NR Dance Studio Certificate</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{
+    margin:0;
+    background:#eee;
+}
+
+/* Controls */
+.controls{
+    text-align:center;
+    padding:15px;
+    background:#ffffff;
+}
+
+input{
+    padding:6px;
+    margin:4px;
+    width:150px;
+}
+
+button{
+    padding:8px 15px;
+    background:#d4af37;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+    margin:5px;
+}
+
+/* Certificate */
+.certificate{
+    position:relative;
+    width:1123px;
+    height:794px;
+    margin:20px auto;
+    background:url("nr_bg.png") no-repeat center;
+    background-size:cover;
+    font-family: 'Playfair Display', serif;
+    color:#2b2b2b;
+}
+
+.ref{
+    position:absolute;
+    top:45px;
+    left:110px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.title{
+    position:absolute;
+    top:220px;
+    width:100%;
+    text-align:center;
+    font-size:46px;
+    font-weight:700;
+    letter-spacing:3px;
+}
+
+.subtitle{
+    position:absolute;
+    top:300px;
+    width:100%;
+    text-align:center;
+    font-size:18px;
+    font-style:italic;
+}
+
+.name{
+    position:absolute;
+    top:335px;
+    width:100%;
+    text-align:center;
+    font-family: 'Allura', cursive;
+    font-size:52px;
+}
+
+.content{
+    position:absolute;
+    top:410px;
+    width:100%;
+    text-align:center;
+    font-size:20px;
+    line-height:1.9;
+}
+
+.highlight{
+    font-weight:700;
+}
+
+.issue{
+    position:absolute;
+    bottom:135px;
+    left:120px;
+    font-size:18px;
+    font-weight:600;
+}
+
+.coordinator{
+    position:absolute;
+    bottom:125px;
+    right:160px;
+    font-size:18px;
+    font-weight:600;
+}
+
+.course{
+    font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="controls" id="controls">
+    <input type="text" id="refNo" placeholder="Reference No">
+    <input type="text" id="studentName" placeholder="Student Name">
+ <select id="gender">
+        <option value="S/o">Male (S/o)</option>
+        <option value="D/o">Female (D/o)</option>
+    </select>
+    <input type="text" id="fatherName" placeholder="Father Name">
+    <input type="text" id="courseName" placeholder="Course Name">
+   <input type="date" id="fromDate">
+<input type="date" id="toDate">
+<input type="date" id="issueDate">
+    <button onclick="generate()">Generate</button>
+    <button onclick="downloadPDF()">Download Certificate</button>
+</div>
+
+<div class="certificate" id="certificate">
+
+    <div class="ref">
+        Ref No: <span id="refOutput">NR-2024-001</span>
+    </div>
+
+    <div class="title">
+        CERTIFICATE OF COMPLETION
+    </div>
+
+    <div class="subtitle">
+        This certifies that
+    </div>
+
+    <div class="name" id="nameOutput">
+        Student Name
+    </div>
+
+    <div class="content">
+
+    <div>
+        <span id="genderOutput">S/o</span> 
+        <span class="highlight" id="fatherOutput">Father Name</span>
+    </div>
+
+ 
+
+    <div>
+        has successfully completed the 
+        <span class="highlight" id="courseOutput">Course Name</span>
+    </div>
+
+
+    <div>
+        at NR Dance Studio from 
+        <span class="highlight" id="fromOutput">From</span> 
+        to 
+        <span class="highlight" id="toOutput">To</span>
+        after fulfilling all training and performance requirements.
+    </div>
+
+</div>
+
+    <div class="issue">
+        Date Issued: <span id="issueOutput">Issue Date</span>
+    </div>
+
+    <div class="coordinator">
+        Program Coordinator
+    </div>
+
+</div>
+
+<script>
+function generate(){
+
+    document.getElementById("refOutput").innerText =
+        document.getElementById("refNo").value;
+
+    document.getElementById("nameOutput").innerText =
+        document.getElementById("studentName").value;
+
+    document.getElementById("genderOutput").innerText =
+        document.getElementById("gender").value;
+
+    document.getElementById("fatherOutput").innerText =
+        document.getElementById("fatherName").value;
+
+    document.getElementById("courseOutput").innerText =
+        document.getElementById("courseName").value;
+
+    document.getElementById("fromOutput").innerText =
+    formatDate(document.getElementById("fromDate").value);
+
+  document.getElementById("toOutput").innerText =
+    formatDate(document.getElementById("toDate").value);
+
+document.getElementById("issueOutput").innerText =
+    formatDate(document.getElementById("issueDate").value);
+}
+
+async function downloadPDF() {
+
+    const { jsPDF } = window.jspdf;
+
+    let certificate = document.getElementById("certificate");
+    let controls = document.getElementById("controls");
+
+    controls.style.display = "none";
+
+    try {
+
+        const canvas = await html2canvas(certificate, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
+        });
+
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+        const pdf = new jsPDF("landscape", "px", [1123, 794]);
+
+        pdf.addImage(imgData, "JPEG", 0, 0, 1123, 794);
+
+        pdf.save("NR_Dance_Studio_Certificate.pdf");
+
+    } catch (error) {
+        alert("Error generating PDF. Check console.");
+        console.error(error);
+    }
+
+    controls.style.display = "block";
+}
+
+function formatDate(dateString){
+    if(!dateString) return "";
+    const options = { day: '2-digit', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-IN', options);
+}
+</script>
+
+</body>
+</html>
